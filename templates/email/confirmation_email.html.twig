@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { background: #f9f9f9; padding: 20px; border-radius: 0 0 10px 10px; }
+        .button { display: inline-block; background: #667eea; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+        .footer { margin-top: 20px; font-size: 12px; color: #666; text-align: center; }
+        .expiry-notice { color: #999; font-size: 12px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚔️ Battle Arena</h1>
+        </div>
+        <div class="content">
+            <h2>Bienvenue, {{ user.username }}!</h2>
+            <p>Pour activer ton compte Battle Arena, tu dois confirmer ton adresse email.</p>
+            
+            <p style="text-align: center;">
+                <a href="{{ signedUrl }}" class="button">Confirmer mon email</a>
+            </p>
+            
+            <p>Si tu n'as pas créé ce compte, ignore ce message.</p>
+            
+            <div class="expiry-notice">
+                <p>{{ 'confirm_email_instruction'|trans({}, 'VerifyEmailBundle') }}</p>
+            </div>
+        </div>
+        <div class="footer">
+            <p>&copy; 2024 Battle Arena. Tous droits réservés.</p>
+        </div>
+    </div>
+</body>
+</html>

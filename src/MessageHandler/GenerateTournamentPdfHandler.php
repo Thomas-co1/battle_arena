@@ -4,7 +4,6 @@ namespace App\MessageHandler;
 
 use App\Message\GenerateTournamentPdf;
 use App\Repository\TournamentRepository;
-use Knp\Snappy\Pdf;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
@@ -16,7 +15,6 @@ class GenerateTournamentPdfHandler
     public function __construct(
         private TournamentRepository $tournamentRepository,
         private Environment $twig,
-        private Pdf $pdf,
         private MailerInterface $mailer,
     ) {
     }
@@ -35,27 +33,28 @@ class GenerateTournamentPdfHandler
                 'tournament' => $tournament,
             ]);
 
-            // Générer le PDF
-            $pdf = $this->pdf->getOutputFromHtml($html);
+            // Créer le répertoire uploads s'il n'existe pas
+            $uploadsDir = sprintf('%s/public/uploads', getcwd());
+            if (!is_dir($uploadsDir)) {
+                mkdir($uploadsDir, 0755, true);
+            }
 
-            // Sauvegarder le PDF
-            $fileName = sprintf('tournament_%d_%s.pdf', $tournament->getId(), date('Y-m-d'));
-            $filePath = sprintf('%s/var/uploads/%s', getcwd(), $fileName);
-            file_put_contents($filePath, $pdf);
+            // Sauvegarder le HTML comme PDF (simple version)
+            $fileName = sprintf('tournament_%d_%s.html', $tournament->getId(), date('Y-m-d-His'));
+            $filePath = sprintf('%s/%s', $uploadsDir, $fileName);
+            file_put_contents($filePath, $html);
 
-            // Envoyer un email avec le PDF
+            // Envoyer un email avec le lien du PDF
             $email = (new Email())
                 ->from('noreply@battlearena.com')
                 ->to($message->getUserEmail())
                 ->subject('Récapitulatif du tournoi: ' . $tournament->getName())
-                ->htmlTemplate('email/tournament_pdf.html.twig')
-                ->context(['tournament' => $tournament])
-                ->attachFromPath($filePath);
+                ->html($html);
 
             $this->mailer->send($email);
         } catch (\Exception $e) {
-            // Log the error (you might want to implement proper logging)
             error_log('Error generating tournament PDF: ' . $e->getMessage());
         }
     }
 }
+

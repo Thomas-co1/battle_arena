@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Service\EmailVerificationService;
 use App\Service\RegistrationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -10,15 +11,15 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class RegistrationController extends AbstractController
 {
     #[Route('/register', name: 'app_register', methods: ['GET', 'POST'])]
-    public function register(Request $request, RegistrationService $registrationService): Response
+    public function register(Request $request, RegistrationService $registrationService, EmailVerificationService $emailService): Response
     {
         if ($this->getUser()) {
             return $this->redirectToRoute('app_tournament_list');
@@ -68,11 +69,11 @@ class RegistrationController extends AbstractController
                     $data['mainCharacter']
                 );
 
-                // TODO: Envoyer email de confirmation
-                // TODO: Rediriger vers page d'attente de confirmation
+                // Envoyer l'email de confirmation
+                $emailService->sendVerificationEmail($user);
 
-                $this->addFlash('success', 'Inscription réussie! Veuillez vérifier votre email.');
-                return $this->redirectToRoute('app_tournament_list');
+                $this->addFlash('success', 'Inscription réussie! Veuillez vérifier votre email pour activer votre compte.');
+                return $this->redirectToRoute('app_verify_email_pending');
             } catch (\Exception $e) {
                 $this->addFlash('error', $e->getMessage());
             }
@@ -82,4 +83,21 @@ class RegistrationController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
+    #[Route('/verify-email/pending', name: 'app_verify_email_pending')]
+    public function verifyEmailPending(): Response
+    {
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        if ($this->getUser()->isVerified()) {
+            return $this->redirectToRoute('app_tournament_list');
+        }
+
+        return $this->render('registration/verify_email.html.twig', [
+            'email' => $this->getUser()->getEmail(),
+        ]);
+    }
 }
+

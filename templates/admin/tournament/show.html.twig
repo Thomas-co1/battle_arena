@@ -1,0 +1,128 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ tournament.name }} - Admin{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>{{ tournament.name }}</h1>
+            <div>
+                <a href="{{ path('admin_tournament_list') }}" class="btn btn-secondary">← Retour</a>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Informations</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Date:</strong> {{ tournament.date|date('d/m/Y') }}</p>
+                        <p><strong>Statut:</strong> 
+                            <span class="badge bg-{% if tournament.status.name == 'PENDING' %}warning{% elseif tournament.status.name == 'ACTIVE' %}success{% elseif tournament.status.name == 'FINISHED' %}secondary{% else %}danger{% endif %}">
+                                {{ tournament.status.getLabel() }}
+                            </span>
+                        </p>
+                        <p><strong>Joueurs inscrits:</strong> {{ tournament.players|length }} / {{ tournament.maxPlayers }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        <a href="{{ path('admin_tournament_edit', { id: tournament.id }) }}" class="btn btn-primary btn-sm">Éditer</a>
+                        
+                        <form method="POST" action="{{ path('admin_tournament_generate_pdf', { id: tournament.id }) }}" style="display: inline;">
+                            <button type="submit" class="btn btn-info btn-sm">📄 Générer PDF</button>
+                        </form>
+
+                        <a href="{{ path('admin_tournament_download_pdf', { id: tournament.id }) }}" class="btn btn-success btn-sm">⬇️ Télécharger PDF</a>
+
+                        <a href="{{ path('admin_match_moderation') }}" class="btn btn-warning btn-sm">⚠️ Différends</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2>Matchs ({{ tournament.matches|length }})</h2>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Joueur 1</th>
+                        <th>Joueur 2</th>
+                        <th>Résultat</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for match in tournament.matches %}
+                        <tr>
+                            <td>{{ match.player1.user.username }}</td>
+                            <td>{{ match.player2.user.username }}</td>
+                            <td>
+                                {% if match.player1Result %}
+                                    <span class="badge bg-{% if match.player1Result.name == 'WIN' %}success{% elseif match.player1Result.name == 'LOSS' %}danger{% else %}warning{% endif %}">
+                                        {{ match.player1Result.getLabel() }}
+                                    </span>
+                                {% else %}
+                                    <span class="text-muted">-</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-{% if match.status.name == 'PENDING' %}warning{% elseif match.status.name == 'FINISHED' %}success{% else %}secondary{% endif %}">
+                                    {{ match.status.getLabel() }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{{ path('admin_match_edit', { id: match.id }) }}" class="btn btn-sm btn-primary">Éditer</a>
+                                {% if match.needsModeration %}
+                                    <span class="badge bg-danger">Modération</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if tournament.matches|length == 0 %}
+            <div class="alert alert-info">
+                Aucun match créé pour ce tournoi. <a href="{{ path('admin_match_create', { tournament_id: tournament.id }) }}">Créer un match</a>
+            </div>
+        {% endif %}
+
+        <h2 class="mt-5">Classement</h2>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Joueur</th>
+                        <th>Victoires</th>
+                        <th>Défaites</th>
+                        <th>Nuls</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set ranking = tournament.getPlayerRanking() %}
+                    {% for position, entry in ranking %}
+                        <tr>
+                            <td><strong>{{ loop.index }}</strong></td>
+                            <td>{{ entry.player.user.username }}</td>
+                            <td><span class="badge bg-success">{{ entry.wins }}</span></td>
+                            <td><span class="badge bg-danger">{{ entry.losses }}</span></td>
+                            <td><span class="badge bg-warning">{{ entry.draws }}</span></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
