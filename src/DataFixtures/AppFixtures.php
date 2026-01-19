@@ -42,7 +42,8 @@ class AppFixtures extends Fixture
             $user = new User();
             $user->setEmail("player{$i}@battlearena.com");
             $user->setUsername("player{$i}");
-            $user->setIsVerified(true);
+            // Mark first player as unverified for testing email verification flow
+            $user->setIsVerified($i !== 1);
             $hashedPassword = $this->passwordHasher->hashPassword($user, 'password123');
             $user->setPassword($hashedPassword);
 
