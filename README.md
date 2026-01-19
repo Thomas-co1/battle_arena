@@ -1,3 +1,5 @@
+désolé si tous les commits sont récents, ce repo est récent du à des problèmes avec un compte git, les fractionnements des commits ont été faits avec l'aide de copilot.
+
 # ⚔️ Battle Arena - Smash Bros Ultimate Tournament
 
 Un système complet de gestion de tournoi pour **Smash Bros Ultimate** avec authentification, CRUD complet, API REST sécurisée, modération des matchs et génération de PDF asynchrone.
