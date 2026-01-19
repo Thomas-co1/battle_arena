@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+<div class="container" style="background: white; padding: 20px; border-radius: 10px;">
+    <h2>Récapitulatif du Tournoi: {{ tournament.name }}</h2>
+    
+    <p>Bonjour,</p>
+    
+    <p>Le récapitulatif du tournoi <strong>{{ tournament.name }}</strong> est en pièce jointe.</p>
+    
+    <p>
+        <strong>Résumé:</strong><br>
+        Date: {{ tournament.startDate|date('d/m/Y H:i') }}<br>
+        Statut: {{ tournament.status.getLabel() }}<br>
+        Matchs: {{ tournament.getMatches()|length }}
+    </p>
+    
+    <p>
+        <a href="https://battlearena.local/tournament/{{ tournament.id }}" class="btn btn-primary">
+            Voir le tournoi en ligne
+        </a>
+    </p>
+    
+    <p>À bientôt!</p>
+</div>
+{% endblock %}

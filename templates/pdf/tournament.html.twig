@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Récapitulatif - {{ tournament.name }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #667eea; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #667eea; color: white; }
+        .match-result { background-color: #f5f5f5; padding: 10px; margin: 10px 0; }
+        .winner { color: green; font-weight: bold; }
+        .loser { color: red; }
+    </style>
+</head>
+<body>
+    <h1>{{ tournament.name }}</h1>
+    <p><strong>Date:</strong> {{ tournament.startDate|date('d/m/Y H:i') }}</p>
+    <p><strong>Statut:</strong> {{ tournament.status.getLabel() }}</p>
+    {% if tournament.description %}
+        <p><strong>Description:</strong> {{ tournament.description }}</p>
+    {% endif %}
+
+    <h2>Classement Final</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Joueur</th>
+                <th>Personnage</th>
+                <th>Victoires</th>
+                <th>Défaites</th>
+                <th>Taux</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% set rank = 1 %}
+            {% for player in tournament.getMatches()|map(m => m.getPlayer1())|merge(tournament.getMatches()|map(m => m.getPlayer2()))|unique %}
+                <tr>
+                    <td>{{ rank }}</td>
+                    <td>{{ player.gamertag }}</td>
+                    <td>{{ player.mainCharacter }}</td>
+                    <td>{{ player.wins }}</td>
+                    <td>{{ player.losses }}</td>
+                    <td>{{ player.getWinRate() }}%</td>
+                </tr>
+                {% set rank = rank + 1 %}
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Résultats des Matchs</h2>
+    {% for match in tournament.getMatches()|filter(m => m.isFinished()) %}
+        <div class="match-result">
+            <strong>
+                <span class="{% if match.getPlayer1Result().value == 'win' %}winner{% else %}loser{% endif %}">
+                    {{ match.getPlayer1().getGamertag() }}
+                </span>
+                vs
+                <span class="{% if match.getPlayer2Result().value == 'win' %}winner{% else %}loser{% endif %}">
+                    {{ match.getPlayer2().getGamertag() }}
+                </span>
+            </strong><br>
+            Score: {{ match.getPlayer1Score() }} - {{ match.getPlayer2Score() }}<br>
+            Date: {{ match.getPlayedDate()|date('d/m/Y H:i') }}
+        </div>
+    {% endfor %}
+
+    <footer style="margin-top: 40px; border-top: 1px solid #ddd; padding-top: 20px; text-align: center; color: #999;">
+        <p>Généré le {{ 'now'|date('d/m/Y H:i') }}</p>
+    </footer>
+</body>
+</html>
