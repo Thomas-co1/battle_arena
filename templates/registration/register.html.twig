@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription - Battle Arena{% endblock %}
+{% block content %}
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body p-4">
+                    <h2 class="card-title text-center mb-4">Rejoins l'Arène!</h2>
+                    
+                    {{ form_start(form) }}
+                        <div class="mb-3">
+                            {{ form_label(form.email, 'Email') }}
+                            {{ form_widget(form.email, {'attr': {'class': 'form-control', 'placeholder': 'ton@email.com'}}) }}
+                            {{ form_errors(form.email) }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(form.username, 'Nom d\'utilisateur') }}
+                            {{ form_widget(form.username, {'attr': {'class': 'form-control', 'placeholder': 'ton_username'}}) }}
+                            {{ form_errors(form.username) }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(form.plainPassword, 'Mot de passe') }}
+                            {{ form_widget(form.plainPassword, {'attr': {'class': 'form-control', 'placeholder': 'Au minimum 8 caractères'}}) }}
+                            {{ form_errors(form.plainPassword) }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(form.gamertag, 'Pseudo de jeu') }}
+                            {{ form_widget(form.gamertag, {'attr': {'class': 'form-control', 'placeholder': 'Ton pseudo Smash'}}) }}
+                            {{ form_errors(form.gamertag) }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(form.skillLevel, 'Niveau (1-15)') }}
+                            {{ form_widget(form.skillLevel, {'attr': {'class': 'form-control', 'type': 'number', 'min': '1', 'max': '15'}}) }}
+                            {{ form_errors(form.skillLevel) }}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form_label(form.mainCharacter, 'Personnage principal') }}
+                            {{ form_widget(form.mainCharacter, {'attr': {'class': 'form-control', 'placeholder': 'Ex: Mario, Zelda, etc.'}}) }}
+                            {{ form_errors(form.mainCharacter) }}
+                        </div>
+
+                        {{ form_widget(form.submit, {'attr': {'class': 'btn btn-primary w-100'}}) }}
+                    {{ form_end(form) }}
+
+                    <hr class="my-4">
+                    <p class="text-center text-muted">
+                        Tu as déjà un compte? <a href="{{ path('app_login') }}">Connecte-toi</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

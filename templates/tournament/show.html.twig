@@ -1,0 +1,200 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ tournament.name }} - Battle Arena{% endblock %}
+{% block content %}
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1 class="text-white">🏆 {{ tournament.name }}</h1>
+            <p class="text-white">{{ tournament.description }}</p>
+            <span class="badge" style="background-color: 
+                {% if tournament.status.value == 'active' %}#dc3545
+                {% elseif tournament.status.value == 'pending' %}#ffc107
+                {% elseif tournament.status.value == 'finished' %}#28a745
+                {% else %}#6c757d{% endif %}">
+                {{ tournament.status.getLabel() }}
+            </span>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Joueurs</h5>
+                    <h2 class="text-primary">{{ stats.players }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Matchs Terminés</h5>
+                    <h2 class="text-success">{{ stats.finished_matches }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Matchs en Attente</h5>
+                    <h2 class="text-warning">{{ stats.pending_matches }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Total Matchs</h5>
+                    <h2>{{ stats.total_matches }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Classement</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Joueur</th>
+                                <th>Perso</th>
+                                <th>V</th>
+                                <th>D</th>
+                                <th>%</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% set rank = 1 %}
+                            {% for player in players %}
+                                <tr>
+                                    <td><strong>{{ rank }}</strong></td>
+                                    <td>{{ player.gamertag }}</td>
+                                    <td>{{ player.mainCharacter }}</td>
+                                    <td><span class="badge bg-success">{{ player.wins }}</span></td>
+                                    <td><span class="badge bg-danger">{{ player.losses }}</span></td>
+                                    <td>{{ player.getWinRate() }}%</td>
+                                </tr>
+                                {% set rank = rank + 1 %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Résultats Récents</h5>
+                </div>
+                <div class="card-body">
+                    {% for match in matches|reverse %}
+                        {% if match.finished %}
+                            <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                                <div>
+                                    <strong>{{ match.player1.gamertag }}</strong> {{ match.player1.mainCharacter }}<br>
+                                    <small class="text-muted">{{ match.playedDate|date('d/m H:i') }}</small>
+                                </div>
+                                <div class="text-center">
+                                    {% if match.player1Result.value == 'win' %}
+                                        <strong class="text-success">{{ match.player1Score }} - {{ match.player2Score }}</strong>
+                                    {% else %}
+                                        <strong class="text-danger">{{ match.player1Score }} - {{ match.player2Score }}</strong>
+                                    {% endif %}
+                                </div>
+                                <div class="text-end">
+                                    <strong>{{ match.player2.gamertag }}</strong> {{ match.player2.mainCharacter }}<br>
+                                    <small class="text-muted">vs</small>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Tous les Matchs</h5>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Joueur 1</th>
+                                <th>Joueur 2</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Score</th>
+                                <th>Résultat</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for match in matches %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ match.player1.gamertag }}</strong><br>
+                                        <small class="text-muted">{{ match.player1.mainCharacter }}</small>
+                                    </td>
+                                    <td>
+                                        <strong>{{ match.player2.gamertag }}</strong><br>
+                                        <small class="text-muted">{{ match.player2.mainCharacter }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge" style="background-color: 
+                                            {% if match.status.value == 'finished' %}#28a745
+                                            {% elseif match.status.value == 'in_progress' %}#fd7e14
+                                            {% elseif match.status.value == 'pending' %}#ffc107
+                                            {% else %}#6c757d{% endif %}">
+                                            {{ match.status.getLabel() }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if match.scheduledDate %}
+                                            {{ match.scheduledDate|date('d/m/Y H:i') }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if match.player1Score %}
+                                            {{ match.player1Score }} - {{ match.player2Score }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if match.finished %}
+                                            {% if match.player1Result.value == 'win' %}
+                                                <span class="badge bg-success">{{ match.player1.gamertag }}</span>
+                                            {% elseif match.player1Result.value == 'loss' %}
+                                                <span class="badge bg-success">{{ match.player2.gamertag }}</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">Égalité</span>
+                                            {% endif %}
+                                        {% elseif match.bothPlayersSubmitted %}
+                                            {% if match.needsModeration %}
+                                                <span class="badge bg-danger">Modération</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="badge bg-warning">En attente</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,89 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tournois - Battle Arena{% endblock %}
+{% block content %}
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1 class="text-white">🏆 Tournois Smash Bros Ultimate</h1>
+        </div>
+    </div>
+
+    {% if active %}
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <h2 class="text-white">En Cours 🔴</h2>
+            </div>
+            {% for tournament in active %}
+                <div class="col-md-4 mb-3">
+                    <div class="card bg-danger text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ tournament.name }}</h5>
+                            <p class="card-text">{{ tournament.description|default('Aucune description') }}</p>
+                            <small>
+                                Début: {{ tournament.startDate|date('d/m/Y H:i') }}<br>
+                                Statut: <strong>{{ tournament.status.getLabel() }}</strong>
+                            </small>
+                            <a href="{{ path('app_tournament_show', {id: tournament.id}) }}" class="btn btn-light btn-sm mt-3">Voir détails</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if upcoming %}
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <h2 class="text-white">À Venir 📅</h2>
+            </div>
+            {% for tournament in upcoming %}
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ tournament.name }}</h5>
+                            <p class="card-text">{{ tournament.description|default('Aucune description') }}</p>
+                            <small>
+                                Début: {{ tournament.startDate|date('d/m/Y H:i') }}<br>
+                                Max joueurs: {{ tournament.maxPlayers }}
+                            </small>
+                            <a href="{{ path('app_tournament_show', {id: tournament.id}) }}" class="btn btn-primary btn-sm mt-3">Voir détails</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if finished %}
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <h2 class="text-white">Terminés ✅</h2>
+            </div>
+            {% for tournament in finished %}
+                <div class="col-md-4 mb-3">
+                    <div class="card text-muted">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ tournament.name }}</h5>
+                            <p class="card-text">{{ tournament.description|default('Aucune description') }}</p>
+                            <small>
+                                Fin: {{ tournament.endDate|default('N/A')|date('d/m/Y H:i') }}<br>
+                                Statut: <strong>{{ tournament.status.getLabel() }}</strong>
+                            </small>
+                            <a href="{{ path('app_tournament_show', {id: tournament.id}) }}" class="btn btn-secondary btn-sm mt-3">Voir résultats</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if not active and not upcoming and not finished %}
+        <div class="row">
+            <div class="col-md-12">
+                <div class="alert alert-info" role="alert">
+                    Aucun tournoi pour le moment. Reviens plus tard!
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
