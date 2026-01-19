@@ -66,7 +66,3 @@ class AdminPdfController extends AbstractController
         return $response;
     }
 }
-
-        return $this->redirectToRoute('admin_tournament_show', ['id' => $tournament->getId()]);
-    }
-}

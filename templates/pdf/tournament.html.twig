@@ -36,14 +36,14 @@
         </thead>
         <tbody>
             {% set rank = 1 %}
-            {% for player in tournament.getMatches()|map(m => m.getPlayer1())|merge(tournament.getMatches()|map(m => m.getPlayer2()))|unique %}
+            {% for entry in tournament.getPlayerRanking() %}
                 <tr>
                     <td>{{ rank }}</td>
-                    <td>{{ player.gamertag }}</td>
-                    <td>{{ player.mainCharacter }}</td>
-                    <td>{{ player.wins }}</td>
-                    <td>{{ player.losses }}</td>
-                    <td>{{ player.getWinRate() }}%</td>
+                    <td>{{ entry.player.gamertag }}</td>
+                    <td>{{ entry.player.mainCharacter }}</td>
+                    <td>{{ entry.wins }}</td>
+                    <td>{{ entry.losses }}</td>
+                    <td>{% if entry.total > 0 %}{{ ((entry.wins / entry.total) * 100)|round(1) }}%{% else %}0%{% endif %}</td>
                 </tr>
                 {% set rank = rank + 1 %}
             {% endfor %}
