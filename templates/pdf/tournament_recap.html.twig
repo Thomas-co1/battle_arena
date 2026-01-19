@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Récapitulatif Tournoi - {{ tournament.name }}</title>
+    <style>
+        @page {
+            margin: 20mm;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.4;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+        }
+        .header h1 {
+            margin: 0 0 10px 0;
+            color: #667eea;
+            font-size: 24pt;
+        }
+        .header .subtitle {
+            color: #666;
+            font-size: 10pt;
+        }
+        .info-box {
+            background-color: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        .info-box h2 {
+            margin: 0 0 10px 0;
+            font-size: 14pt;
+            color: #333;
+        }
+        .info-box p {
+            margin: 5px 0;
+            font-size: 10pt;
+        }
+        .info-box .label {
+            font-weight: bold;
+            display: inline-block;
+            width: 150px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+            font-size: 9pt;
+        }
+        table caption {
+            font-size: 14pt;
+            font-weight: bold;
+            color: #333;
+            text-align: left;
+            margin-bottom: 10px;
+            padding: 10px 0;
+        }
+        table thead {
+            background-color: #667eea;
+            color: white;
+        }
+        table th, table td {
+            padding: 8px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        table tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        table tbody tr:hover {
+            background-color: #e9ecef;
+        }
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 8pt;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .badge-success {
+            background-color: #28a745;
+            color: white;
+        }
+        .badge-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        .badge-warning {
+            background-color: #ffc107;
+            color: #333;
+        }
+        .badge-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        .badge-info {
+            background-color: #17a2b8;
+            color: white;
+        }
+        .ranking {
+            font-weight: bold;
+            color: #667eea;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 2px solid #ddd;
+            text-align: center;
+            font-size: 8pt;
+            color: #999;
+        }
+        .section {
+            page-break-inside: avoid;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>⚔️ Battle Arena</h1>
+        <div class="subtitle">Récapitulatif du Tournoi</div>
+    </div>
+
+    <div class="info-box">
+        <h2>{{ tournament.name }}</h2>
+        <p><span class="label">Date du tournoi:</span> {{ tournament.date|date('d/m/Y à H:i') }}</p>
+        <p><span class="label">Statut:</span> 
+            <span class="badge badge-{% if tournament.status.name == 'PENDING' %}warning{% elseif tournament.status.name == 'ACTIVE' %}info{% elseif tournament.status.name == 'FINISHED' %}success{% else %}secondary{% endif %}">
+                {{ tournament.status.getLabel() }}
+            </span>
+        </p>
+        <p><span class="label">Nombre de joueurs:</span> {{ tournament.players|length }} / {{ tournament.maxPlayers }}</p>
+        <p><span class="label">Nombre de matchs:</span> {{ tournament.matches|length }}</p>
+    </div>
+
+    <div class="section">
+        <table>
+            <caption>🏆 Classement Final</caption>
+            <thead>
+                <tr>
+                    <th style="width: 10%;">#</th>
+                    <th style="width: 30%;">Joueur</th>
+                    <th style="width: 25%;">Personnage</th>
+                    <th style="width: 10%;">Victoires</th>
+                    <th style="width: 10%;">Défaites</th>
+                    <th style="width: 10%;">Nuls</th>
+                    <th style="width: 15%;">Ratio</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in tournament.getPlayerRanking() %}
+                    <tr>
+                        <td class="ranking">{{ loop.index }}</td>
+                        <td><strong>{{ entry.player.gamertag }}</strong></td>
+                        <td>{{ entry.player.mainCharacter }}</td>
+                        <td><span class="badge badge-success">{{ entry.wins }}</span></td>
+                        <td><span class="badge badge-danger">{{ entry.losses }}</span></td>
+                        <td><span class="badge badge-warning">{{ entry.draws }}</span></td>
+                        <td>{% if entry.total > 0 %}{{ ((entry.wins / entry.total) * 100)|round(1) }}%{% else %}0%{% endif %}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="section">
+        <table>
+            <caption>⚔️ Résultats des Matchs</caption>
+            <thead>
+                <tr>
+                    <th style="width: 8%;">#</th>
+                    <th style="width: 30%;">Joueur 1</th>
+                    <th style="width: 30%;">Joueur 2</th>
+                    <th style="width: 15%;">Résultat J1</th>
+                    <th style="width: 15%;">Résultat J2</th>
+                    <th style="width: 12%;">Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for match in tournament.matches %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ match.player1.gamertag }}</td>
+                        <td>{{ match.player2.gamertag }}</td>
+                        <td>
+                            {% if match.player1Result %}
+                                <span class="badge badge-{% if match.player1Result.name == 'WIN' %}success{% elseif match.player1Result.name == 'LOSS' %}danger{% else %}warning{% endif %}">
+                                    {{ match.player1Result.getLabel() }}
+                                </span>
+                            {% else %}
+                                <span class="badge badge-secondary">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if match.player2Result %}
+                                <span class="badge badge-{% if match.player2Result.name == 'WIN' %}success{% elseif match.player2Result.name == 'LOSS' %}danger{% else %}warning{% endif %}">
+                                    {{ match.player2Result.getLabel() }}
+                                </span>
+                            {% else %}
+                                <span class="badge badge-secondary">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge badge-{% if match.status.name == 'PENDING' %}warning{% elseif match.status.name == 'FINISHED' %}success{% else %}secondary{% endif %}">
+                                {{ match.status.getLabel() }}
+                            </span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if tournament.matches|filter(m => m.needsModeration)|length > 0 %}
+    <div class="section">
+        <table>
+            <caption>⚠️ Matchs Nécessitant une Modération</caption>
+            <thead>
+                <tr>
+                    <th style="width: 30%;">Joueur 1</th>
+                    <th style="width: 30%;">Joueur 2</th>
+                    <th style="width: 40%;">Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for match in tournament.matches|filter(m => m.needsModeration) %}
+                    <tr>
+                        <td>{{ match.player1.gamertag }}</td>
+                        <td>{{ match.player2.gamertag }}</td>
+                        <td>{{ match.moderationNotes ?? 'Résultats incohérents' }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    <div class="footer">
+        <p>Généré le {{ "now"|date('d/m/Y à H:i') }} par Battle Arena</p>
+        <p>&copy; 2024 Battle Arena - Système de Gestion de Tournois</p>
+    </div>
+</body>
+</html>
