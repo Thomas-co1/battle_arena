@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tournois - Admin{% endblock %}
+{% block content %}
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="text-white">🏆 Gestion des Tournois</h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{{ path('admin_player_list') }}" class="btn btn-info">Joueurs</a>
+            <a href="{{ path('admin_match_moderation') }}" class="btn btn-warning">Modération</a>
+        </div>
+    </div>
+
+    <div class="row">
+        {% for tournament in tournaments %}
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>{{ tournament.name }}</h5>
+                        <small class="text-muted">
+                            Début: {{ tournament.startDate|date('d/m/Y H:i') }}<br>
+                            Statut: <strong>{{ tournament.status.getLabel() }}</strong>
+                        </small>
+                        <div class="mt-3">
+                            <a href="{{ path('admin_tournament_matches', {id: tournament.id}) }}" class="btn btn-primary btn-sm w-100">Voir matchs</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
