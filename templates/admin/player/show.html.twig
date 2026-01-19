@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ player.gamertag }} - Admin{% endblock %}
+{% block content %}
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <h1 class="text-white">{{ player.gamertag }}</h1>
+            <a href="{{ path('admin_player_list') }}" class="btn btn-secondary btn-sm">← Retour</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Infos Profil</h5>
+                    <p><strong>Email:</strong> {{ player.user.email }}</p>
+                    <p><strong>Username:</strong> {{ player.user.username }}</p>
+                    <p><strong>Gamertag:</strong> {{ player.gamertag }}</p>
+                    <p><strong>Personnage:</strong> {{ player.mainCharacter }}</p>
+                    <p><strong>Niveau:</strong> {{ player.skillLevel }}/15</p>
+                    <p><strong>Inscrit:</strong> {{ player.createdAt|date('d/m/Y H:i') }}</p>
+                    
+                    <div class="mt-3">
+                        <a href="{{ path('admin_player_edit', {id: player.id}) }}" class="btn btn-warning">Éditer</a>
+                        <form method="POST" action="{{ path('admin_player_delete', {id: player.id}) }}" style="display: inline;" onsubmit="return confirm('Êtes-vous sûr?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ player.id) }}">
+                            <button class="btn btn-danger" type="submit">Supprimer</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Statistiques</h5>
+                    <p><strong>Victoires:</strong> {{ player.wins }}</p>
+                    <p><strong>Défaites:</strong> {{ player.losses }}</p>
+                    <p><strong>Taux:</strong> {{ player.getWinRate() }}%</p>
+                    <p><strong>Total matchs:</strong> {{ player.wins + player.losses }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Joueurs - Admin{% endblock %}
+{% block content %}
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="text-white">👥 Gestion des Joueurs</h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{{ path('admin_player_new') }}" class="btn btn-success">+ Créer un joueur</a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Gamertag</th>
+                                <th>Email</th>
+                                <th>Personnage</th>
+                                <th>Niveau</th>
+                                <th>V-D</th>
+                                <th>%</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for player in players %}
+                                <tr>
+                                    <td>{{ player.id }}</td>
+                                    <td><strong>{{ player.gamertag }}</strong></td>
+                                    <td>{{ player.user.email }}</td>
+                                    <td>{{ player.mainCharacter }}</td>
+                                    <td>{{ player.skillLevel }}/15</td>
+                                    <td>{{ player.wins }}-{{ player.losses }}</td>
+                                    <td>{{ player.getWinRate() }}%</td>
+                                    <td>
+                                        <a href="{{ path('admin_player_show', {id: player.id}) }}" class="btn btn-info btn-sm">Voir</a>
+                                        <a href="{{ path('admin_player_edit', {id: player.id}) }}" class="btn btn-warning btn-sm">Éditer</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

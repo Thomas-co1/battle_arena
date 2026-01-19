@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Éditer {{ player.gamertag }} - Admin{% endblock %}
+{% block content %}
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title mb-4">Éditer {{ player.gamertag }}</h2>
+                    
+                    {{ form_start(form) }}
+                        <div class="mb-3">
+                            {{ form_label(form.gamertag) }}
+                            {{ form_widget(form.gamertag, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                        <div class="mb-3">
+                            {{ form_label(form.skillLevel) }}
+                            {{ form_widget(form.skillLevel, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                        <div class="mb-3">
+                            {{ form_label(form.mainCharacter) }}
+                            {{ form_widget(form.mainCharacter, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+                        {{ form_widget(form.submit, {'attr': {'class': 'btn btn-primary w-100'}}) }}
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
